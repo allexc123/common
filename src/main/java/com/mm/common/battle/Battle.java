@@ -1,9 +1,15 @@
 package com.mm.common.battle;
 
+import java.util.Iterator;
 import java.util.List;
 
-public class Battle {
+import com.mm.action.ActionQueue;
+import com.mm.common.battle.unit.UnitCollection;
 
+public class Battle {
+	
+	protected ActionQueue actionQueue;
+	
 	protected int battleId; //战斗Id
 	
 	protected long startTime; //战斗开始时间
@@ -11,18 +17,81 @@ public class Battle {
 	
 	protected AttackOrder lastAttackOrder; //上一个攻击的指令
 	protected List<AttackOrder> orderQueue;	//当前使用的指令集
+	protected List<AttackOrder> attackOrders; //待发送的指令集
 	
 	protected List<AttackOrder> historyAttackOrder;//历史指令集
 	
+	protected UnitCollection uc; //战斗单位集合
 	
+	protected BattleState state;
+	
+	
+	public ActionQueue getActionQueue() {
+		return actionQueue;
+	}
+	
+	
+	public BattleState getState() {
+		return state;
+	}
+
+
+	public void setState(BattleState state) {
+		this.state = state;
+	}
+
+
 	/**
 	 * 执行战斗
 	 * 一个回合的攻击
 	 */
 	public void execOrders() {
+		uc.releaseOrders(curFrame);
 		
+		Iterator<AttackOrder> it = orderQueue.iterator();
+		while(it.hasNext()) {
+			AttackOrder order = it.next();
+			boolean result = order.canExec(curFrame);
+			if(result) {
+				order.exec(curFrame);
+				
+				historyAttackOrder.add(order);
+				it.remove();
+			}
+		}
 	}
 	public int getCurFrame() {
 		return this.curFrame;
+	}
+	
+	public void addOrder(AttackOrder order) {
+		int index = 0;
+		for(AttackOrder temp : orderQueue) {
+			if(temp.getExecFrame() > order.getExecFrame()) {
+				break;
+			}
+			index++;
+		}
+		orderQueue.add(index, order);
+	}
+	
+	public AttackOrder getLastAttackOrder() {
+		return lastAttackOrder;
+	}
+	public void setLastAttackOrder(AttackOrder lastAttackOrder) {
+		this.lastAttackOrder = lastAttackOrder;
+	}
+	public void addAttackOrder(AttackOrder order) {
+		this.attackOrders.add(order);
+	}
+	public void addFrame(int frame) {
+		this.curFrame += frame;
+	}
+	
+	public void sendAttackOrder() {
+		
+	}
+	public void checkState(int delay) {
+		
 	}
 }
