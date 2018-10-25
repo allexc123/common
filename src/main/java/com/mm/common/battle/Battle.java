@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.mm.action.ActionQueue;
+import com.mm.common.battle.action.CheckBattleAction;
 import com.mm.common.battle.unit.UnitCollection;
 
 public class Battle {
@@ -39,25 +40,70 @@ public class Battle {
 	public void setState(BattleState state) {
 		this.state = state;
 	}
-
+	/**
+	 * 前端加载完成
+	 */
+	public void loadOver(){
+		if(this.state == BattleState.LOADING) {
+			
+			this.state = BattleState.START;
+			this.startTime = System.currentTimeMillis();
+			
+			
+			//通知前端战斗开始
+		}
+		
+		checkState(10);
+	}
+	
+	/**
+	 * 战斗开始
+	 */
+	public void start() {
+		if(this.state == BattleState.START) {
+			this.state = BattleState.FIGHTING;
+			
+		}
+		checkState(10);
+	}
 
 	/**
 	 * 执行战斗
 	 * 一个回合的攻击
 	 */
 	public void execOrders() {
-		uc.releaseOrders(curFrame);
-		
-		Iterator<AttackOrder> it = orderQueue.iterator();
-		while(it.hasNext()) {
-			AttackOrder order = it.next();
-			boolean result = order.canExec(curFrame);
-			if(result) {
-				order.exec(curFrame);
-				
-				historyAttackOrder.add(order);
-				it.remove();
+		if(this.state == BattleState.FIGHTING) {
+			
+			uc.releaseOrders(curFrame);
+			
+			Iterator<AttackOrder> it = orderQueue.iterator();
+			while(it.hasNext()) {
+				AttackOrder order = it.next();
+				boolean result = order.canExec(curFrame);
+				if(result) {
+					order.exec(curFrame);
+					
+					historyAttackOrder.add(order);
+					it.remove();
+				}
 			}
+		}
+		checkState(10);
+	}
+	/**
+	 * 战斗结束
+	 */
+	public void over() {
+		if(this.state == BattleState.OVER) {
+			this.state = BattleState.STOP;
+		}
+	}
+	/**
+	 * 战斗停止
+	 */
+	public void stop() {
+		if(this.state == BattleState.STOP) {
+			
 		}
 	}
 	public int getCurFrame() {
@@ -92,6 +138,6 @@ public class Battle {
 		
 	}
 	public void checkState(int delay) {
-		
+		new CheckBattleAction(this, delay).start();;;
 	}
 }

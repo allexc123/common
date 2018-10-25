@@ -16,15 +16,8 @@ public class CheckBattleAction  extends DelayAction{
 	public void execute() {
 		
 		BattleState state = battle.getState();
-		switch (state) {
-		case LOADING:
-			
-			break;
-		case START:
-			
-			break;
-		default:
-			break;
+		if(state != null) {
+			state.exec(battle);
 		}
 		
 	}
