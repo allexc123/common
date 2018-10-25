@@ -55,7 +55,10 @@ public class Battle {
 		
 		checkState(10);
 	}
-	
+	public void initialize() {
+		
+		this.state = BattleState.LOADING;
+	}
 	/**
 	 * 战斗开始
 	 */
