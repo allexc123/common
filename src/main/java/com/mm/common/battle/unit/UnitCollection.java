@@ -62,12 +62,14 @@ public class UnitCollection {
 	
 	public void releaseOrders(int curFrame) {
 		for(Unit unit : aliveUnits.values()) {
+
 			AttackOrder order = unit.releaseOrder(curFrame);
+
 			if(order != null) {
-				List<Unit> select = Selector.select(SelectType.ALL, unit, this, SelectSide.ENEMY, "");
-				for(Unit u : select) {
-					System.out.println("select ====  source " + unit.getId() + " target " + u.getId());
-				}
+//				List<Unit> select = Selector.select(SelectType.ALL, unit, this, SelectSide.ENEMY, "");
+//				for(Unit u : select) {
+//					System.out.println("select ====  source " + unit.getId() + " target " + u.getId());
+//				}
 
 				battle.addOrder(order);
 			}
