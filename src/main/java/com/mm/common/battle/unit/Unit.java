@@ -3,8 +3,11 @@ package com.mm.common.battle.unit;
 import com.mm.common.battle.AttackOrder;
 import com.mm.common.battle.Battle;
 import com.mm.common.battle.BattleSide;
+import com.mm.common.battle.selector.SelectSide;
+import com.mm.common.battle.selector.SelectType;
+import com.mm.common.battle.selector.Selector;
 
-public abstract class Unit {
+public class Unit {
 	
 	private Battle battle;
 	
@@ -21,6 +24,7 @@ public abstract class Unit {
 		this.id = id;
 		this.side = side;
 		this.battle = battle;
+	
 	}
 	
 	public Battle getBattle() {
@@ -48,17 +52,26 @@ public abstract class Unit {
 	public void setReadyTime(int readyTime) {
 		this.readyTime = readyTime;
 	}
-	
-	public boolean canAction(int curTime) {
-		if(curTime < readyTime) {
+	/**
+	 * 目标对象是否能行动
+	 * @return
+	 */
+	public boolean canAction(int curFrame) {
+		if(curFrame < readyTime) {
 			return false;
 		}
 		return true;
 	}
 	
 	public AttackOrder releaseOrder(int curFrame) {
-		return null;
+		if(!canAction(curFrame)) {
+			return null;
+		}
+		
+		AttackOrder order = new AttackOrder(this, null);
+		return order;
 	}
+	
 
 	
 	

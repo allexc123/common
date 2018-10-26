@@ -8,6 +8,9 @@ import java.util.Map;
 import com.mm.common.battle.AttackOrder;
 import com.mm.common.battle.Battle;
 import com.mm.common.battle.BattleSide;
+import com.mm.common.battle.selector.SelectSide;
+import com.mm.common.battle.selector.SelectType;
+import com.mm.common.battle.selector.Selector;
 
 public class UnitCollection {
 	
@@ -45,8 +48,14 @@ public class UnitCollection {
 		}
 		units.put(unit.getId(), unit);
 		
+		aliveUnits.put(unit.getId(), unit);
 		allUnits.add(unit);
 	}
+	
+	public List<Unit> getAliveUnit(BattleSide side) {
+		return new ArrayList<Unit>(side == BattleSide.ATTACKER ? attackUnits.values() : defendeUnits.values());
+	}
+	
 	public void walkTime(int interval) {
 		
 	}
@@ -54,6 +63,14 @@ public class UnitCollection {
 	public void releaseOrders(int curFrame) {
 		for(Unit unit : aliveUnits.values()) {
 			AttackOrder order = unit.releaseOrder(curFrame);
+			if(order != null) {
+				List<Unit> select = Selector.select(SelectType.ALL, unit, this, SelectSide.ENEMY, "");
+				for(Unit u : select) {
+					System.out.println("select ====  source " + unit.getId() + " target " + u.getId());
+				}
+
+				battle.addOrder(order);
+			}
 		}
 	}
 	

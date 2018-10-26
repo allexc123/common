@@ -75,14 +75,25 @@ public class AttackOrder {
 	
 	public void exec(int curFrame) {
 		
+		this.setExecFrame(curFrame);
+		boolean result = exec();
 		
 	
-		int nextFrame = 0;
+		int nextFrame = this.getExecFrame() + this.frameNum;
 		sourec.setReadyTime(nextFrame);
 		sourec.addCurTurn();
+		
 		battle.setLastAttackOrder(this);
 		battle.addAttackOrder(this);
-		battle.sendAttackOrder();
+
 	}
 	
+	private boolean exec() {
+		calcFrameNum();
+		return true;
+	}
+	
+	private void calcFrameNum() {
+		this.frameNum = 5;
+	}
 }

@@ -1,13 +1,20 @@
 package com.mm.common.battle;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import com.mm.action.ActionQueue;
 import com.mm.common.battle.action.CheckBattleAction;
+import com.mm.common.battle.unit.Unit;
 import com.mm.common.battle.unit.UnitCollection;
 
 public class Battle {
+	
+	/**
+	 * 战斗配置
+	 */
+	protected static final int fqcy = 400;
 	
 	protected ActionQueue actionQueue;
 	
@@ -26,19 +33,35 @@ public class Battle {
 	
 	protected BattleState state;
 	
+	protected float battleSpeed; //战斗速度
 	
-	public ActionQueue getActionQueue() {
-		return actionQueue;
+	public Battle() {
+		this.battleId = BattleContext.idGenerator();
+		this.actionQueue = new ActionQueue(BattleContext.executor());
+
+		this.orderQueue = new ArrayList<AttackOrder>();	
+		this.attackOrders = new ArrayList<AttackOrder>();
+		this.historyAttackOrder = new ArrayList<AttackOrder>();
+		
+		this.uc = new UnitCollection(this);
+		this.battleSpeed = 1.0f;
+		this.curFrame = 0;
 	}
 	
-	
-	public BattleState getState() {
-		return state;
+	public void addUnit(Unit unit) {
+		this.uc.addUnit(unit);
 	}
-
-
-	public void setState(BattleState state) {
-		this.state = state;
+	
+	private void attaclClean() {
+		this.attackOrders.clear();
+	}
+	
+	public void initialize() {
+		
+		this.state = BattleState.LOADING;
+		
+		BattleContext.add(this);
+		checkState(checkTime());
 	}
 	/**
 	 * 前端加载完成
@@ -53,11 +76,7 @@ public class Battle {
 			//通知前端战斗开始
 		}
 		
-		checkState(10);
-	}
-	public void initialize() {
-		
-		this.state = BattleState.LOADING;
+		checkState(checkTime());
 	}
 	/**
 	 * 战斗开始
@@ -67,7 +86,7 @@ public class Battle {
 			this.state = BattleState.FIGHTING;
 			
 		}
-		checkState(10);
+		checkState(checkTime());
 	}
 
 	/**
@@ -79,6 +98,8 @@ public class Battle {
 			
 			uc.releaseOrders(curFrame);
 			
+			//清理上一回合数据
+			attaclClean();
 			Iterator<AttackOrder> it = orderQueue.iterator();
 			while(it.hasNext()) {
 				AttackOrder order = it.next();
@@ -87,11 +108,13 @@ public class Battle {
 					order.exec(curFrame);
 					
 					historyAttackOrder.add(order);
+					
 					it.remove();
 				}
 			}
+			this.sendAttackOrder();
 		}
-		checkState(10);
+		checkState(checkTime());
 	}
 	/**
 	 * 战斗结束
@@ -100,13 +123,14 @@ public class Battle {
 		if(this.state == BattleState.OVER) {
 			this.state = BattleState.STOP;
 		}
+		checkState(checkTime());
 	}
 	/**
 	 * 战斗停止
 	 */
 	public void stop() {
 		if(this.state == BattleState.STOP) {
-			
+			BattleContext.remove(this.battleId);
 		}
 	}
 	public int getCurFrame() {
@@ -137,10 +161,47 @@ public class Battle {
 		this.curFrame += frame;
 	}
 	
-	public void sendAttackOrder() {
-		
-	}
 	public void checkState(int delay) {
 		new CheckBattleAction(this, delay).start();;;
 	}
+	public int checkTime() {
+		return fqcy;
+	}
+	
+	
+	
+	public int getBattleId() {
+		return battleId;
+	}
+
+	public void sendAttackOrder() {
+		for(AttackOrder order : attackOrders) {
+			System.out.println("socrce " + order.getSourec().getId() + "  Frame = " + order.getExecFrame() + " readyTime = "+ order.getSourec().getReadyTime());
+		}
+	}
+
+	public ActionQueue getActionQueue() {
+		return actionQueue;
+	}
+	
+	
+	public BattleState getState() {
+		return state;
+	}
+
+
+	public void setState(BattleState state) {
+		this.state = state;
+	}
+	
+	
+	public float getBattleSpeed() {
+		return battleSpeed;
+	}
+
+	public void setBattleSpeed(float battleSpeed) {
+		this.battleSpeed = battleSpeed;
+	}
+
+
 }
