@@ -78,10 +78,13 @@ public class AttackOrder {
 		this.setExecFrame(curFrame);
 		boolean result = exec();
 		
+		
 	
 		int nextFrame = this.getExecFrame() + this.frameNum;
 		sourec.setReadyTime(nextFrame);
 		sourec.addCurTurn();
+		//执行失败
+		if(result)return;
 		
 		battle.setLastAttackOrder(this);
 		battle.addAttackOrder(this);
