@@ -99,8 +99,12 @@ public class Unit {
 		}
 		return true;
 	}
-	
-	public AttackOrder releaseOrder(int curFrame) {
+	/**
+	 * 获取技能
+	 * @param curFrame
+	 * @return
+	 */
+	public Skill acquireSkill(int curFrame) {
 		if(!canAction(curFrame)) {
 			return null;
 		}
@@ -108,9 +112,7 @@ public class Unit {
 		if((skill.getLastUse() + skill.getLastCommonCD()) >= curFrame) {
 			return null;
 		}
-		skill.setLastUse(curFrame);
-		AttackOrder order = new AttackOrder(this, null);
-		return order;
+		return skill;
 	}
 	
 

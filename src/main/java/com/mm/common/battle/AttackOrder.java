@@ -15,6 +15,8 @@ public class AttackOrder {
 	private int frameNum;
 	private int execFrame;
 	
+	private int skillId;
+	
 	
 	public AttackOrder(Unit source, List<Unit> targets) {
 		this.battle = source.getBattle();
@@ -93,7 +95,22 @@ public class AttackOrder {
 	
 	private boolean exec() {
 		calcFrameNum();
+		//行动前buff
+		
+		//使用技能
+		execSkill();
+		//行动后buff
+		
 		return true;
+	}
+	private void execSkill() {
+		//获取技能模板
+	}
+	/**
+	 * 生成buff
+	 */
+	private void createBuff() {
+		
 	}
 	
 	private void calcFrameNum() {

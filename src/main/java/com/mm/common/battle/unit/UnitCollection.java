@@ -11,6 +11,7 @@ import com.mm.common.battle.BattleSide;
 import com.mm.common.battle.selector.SelectSide;
 import com.mm.common.battle.selector.SelectType;
 import com.mm.common.battle.selector.Selector;
+import com.mm.common.battle.skill.Skill;
 
 public class UnitCollection {
 	
@@ -63,10 +64,14 @@ public class UnitCollection {
 	public void releaseOrders(int curFrame) {
 		for(Unit unit : aliveUnits.values()) {
 
-			AttackOrder order = unit.releaseOrder(curFrame);
-
+			Skill skill = unit.acquireSkill(curFrame);
+			if(skill == null) {
+				return;
+			}
+			AttackOrder order = createOrder(skill.getSkillId(), unit);
+			skill.setLastUse(curFrame);
 			if(order != null) {
-//				List<Unit> select = Selector.select(SelectType.ALL, unit, this, SelectSide.ENEMY, "");
+//				
 //				for(Unit u : select) {
 //					System.out.println("select ====  source " + unit.getId() + " target " + u.getId());
 //				}
@@ -75,7 +80,13 @@ public class UnitCollection {
 			}
 		}
 	}
-	
+	public AttackOrder createOrder(int skillId, Unit source) {
+		
+		//根据技能配置获取目标
+		List<Unit> targets = Selector.select(SelectType.ALL, source, this, SelectSide.ENEMY, "");
+		AttackOrder order = new AttackOrder(source, targets);
+		return order;
+	}
 	/**
 	 * 从死亡列表移到存活列表中
 	 * @param unit
