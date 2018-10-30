@@ -21,6 +21,9 @@ public enum BattleState {
 	FIGHTING {
 		@Override
 		public void exec(Battle battle) {
+			if(battle.isOver()) {
+				return;
+			}
 			battle.execOrders();
 			
 		}

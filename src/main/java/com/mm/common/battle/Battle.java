@@ -1,11 +1,13 @@
 package com.mm.common.battle;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import com.mm.action.ActionQueue;
 import com.mm.common.battle.action.CheckBattleAction;
+import com.mm.common.battle.damage.Damage;
 import com.mm.common.battle.unit.Unit;
 import com.mm.common.battle.unit.UnitCollection;
 
@@ -113,6 +115,7 @@ public class Battle {
 				}
 			}
 			this.sendAttackOrder();
+			
 		}
 		checkState(checkTime());
 	}
@@ -122,6 +125,11 @@ public class Battle {
 	public void over() {
 		if(this.state == BattleState.OVER) {
 			this.state = BattleState.STOP;
+			System.out.println("Battle Over");
+			List<Unit> allUnits = uc.getAllUnits();
+			for(Unit unit : allUnits) {
+				System.out.println(unit.getId()+ " hp " + unit.getHp());
+			}
 		}
 		checkState(checkTime());
 	}
@@ -133,6 +141,7 @@ public class Battle {
 			BattleContext.remove(this.battleId);
 		}
 	}
+	
 	public int getCurFrame() {
 		return this.curFrame;
 	}
@@ -177,6 +186,11 @@ public class Battle {
 	public void sendAttackOrder() {
 		for(AttackOrder order : attackOrders) {
 			System.out.println("socrce " + order.getSourec().getId() + "  Frame = " + order.getExecFrame() + " readyTime = "+ order.getSourec().getReadyTime());
+			System.out.println(order.getSourec().getId() + "对 ");
+			for(Damage damage : order.getDamages()) {
+				System.out.println(damage.getTarget().getId() + " 造成了 " + damage.getDamageValue() + "伤害 当前 HP " + damage.getTarget().getHp());
+			}
+			System.out.println("---------------------------");
 		}
 	}
 
@@ -201,6 +215,18 @@ public class Battle {
 
 	public void setBattleSpeed(float battleSpeed) {
 		this.battleSpeed = battleSpeed;
+	}
+	
+	public UnitCollection unitCollection() {
+		return this.uc;
+	}
+	public boolean isOver() {
+		if(uc.isOver()) {
+			this.state =  BattleState.OVER;
+			this.checkState(getCurFrame());
+			return true;
+		}
+		return false;
 	}
 
 

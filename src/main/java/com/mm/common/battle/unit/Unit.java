@@ -7,6 +7,7 @@ import com.mm.common.battle.AttackOrder;
 import com.mm.common.battle.Battle;
 import com.mm.common.battle.BattleSide;
 import com.mm.common.battle.buffer.Buffer;
+import com.mm.common.battle.damage.Damage;
 import com.mm.common.battle.selector.SelectSide;
 import com.mm.common.battle.selector.SelectType;
 import com.mm.common.battle.selector.Selector;
@@ -33,6 +34,9 @@ public class Unit {
 	private List<Skill> passives;
 	
 	private List<Buffer> buffers;
+	
+	
+	private int hp = 1000;
 	
 	public Unit(long id, BattleSide side, Battle battle){
 		this.id = id;
@@ -89,6 +93,18 @@ public class Unit {
 	public void setReadyTime(int readyTime) {
 		this.readyTime = readyTime;
 	}
+	
+	
+	public int getHp() {
+		return hp;
+	}
+
+	public void setHp(int hp) {
+		this.hp = hp;
+	}
+	public boolean isDead() {
+		return this.hp <= 0;
+	}
 	/**
 	 * 目标对象是否能行动
 	 * @return
@@ -115,7 +131,27 @@ public class Unit {
 		return skill;
 	}
 	
-
+	public void takeDamage(Damage damage, UnitCollection uc) {
+		if(this.isDead()) {
+			return;
+		}
+		//处理伤害 加深、减伤 （如护盾等） 
+		int oldValue = this.hp;
+		
+		int damageValue = (int) damage.getDamageValue() - 8;
+		
+		int curValue = oldValue - damageValue;
+		curValue = curValue < 0? 0 : curValue;
+		this.setHp(curValue);
+		
+		damage.setDamageValue(damageValue);
+		
+		if(this.isDead()) {
+			uc.transferUnitDeath(this);
+		}
+	}
+	
+	
 	
 	
 	

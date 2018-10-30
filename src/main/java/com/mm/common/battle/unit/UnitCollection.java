@@ -1,6 +1,7 @@
 package com.mm.common.battle.unit;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +13,16 @@ import com.mm.common.battle.selector.SelectSide;
 import com.mm.common.battle.selector.SelectType;
 import com.mm.common.battle.selector.Selector;
 import com.mm.common.battle.skill.Skill;
+import com.mm.common.battle.template.SkillTemplate;
+import com.mm.modular.Inject;
+import com.mm.modular.Prototype;
+import com.mm.template.Templates;
 
+@Prototype
 public class UnitCollection {
+	
+	@Inject
+	private Templates templates;
 	
 	private Battle battle;
 	
@@ -82,9 +91,15 @@ public class UnitCollection {
 	}
 	public AttackOrder createOrder(int skillId, Unit source) {
 		
+		SkillTemplate skillTemplate = templates.getTemplates(skillId, SkillTemplate.class);
+		if(skillTemplate == null) {
+			System.out.println("技能不存在" + skillId);
+		}
+		SelectType selectType = skillTemplate.getSelectType();
+		SelectSide selectSide = skillTemplate.getSelectSide();
 		//根据技能配置获取目标
-		List<Unit> targets = Selector.select(SelectType.ALL, source, this, SelectSide.ENEMY, "");
-		AttackOrder order = new AttackOrder(source, targets);
+		List<Unit> targets = Selector.select(selectType, source, this, selectSide, "");
+		AttackOrder order = new AttackOrder(source, targets, skillId);
 		return order;
 	}
 	/**
@@ -98,6 +113,9 @@ public class UnitCollection {
 		}
 		deathUnits.remove(unit.getId());
 		aliveUnits.put(unit.getId(), unit);
+		Map<Long, Unit> unitMap = side == BattleSide.ATTACKER ? attackUnits : defendeUnits;
+		unitMap.put(unit.getId(), unit);
+		
 	}
 	/**
 	 * 加入死亡列表
@@ -109,7 +127,21 @@ public class UnitCollection {
 			return;
 		}
 		aliveUnits.remove(unit.getId());
+		
+		Map<Long, Unit> unitMap = side == BattleSide.ATTACKER ? attackUnits : defendeUnits;
+		unitMap.remove(unit.getId());
+		
 		deathUnits.put(unit.getId(), unit);
+	}
+	public Collection<Unit> getAliveUnits() {
+		return aliveUnits.values();
+	}
+	
+	public List<Unit> getAllUnits() {
+		return allUnits;
+	}
+	public boolean isOver() {
+		return this.attackUnits.isEmpty() || this.defendeUnits.isEmpty();
 	}
 
 }

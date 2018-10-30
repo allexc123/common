@@ -1,13 +1,17 @@
 package com.mm.common.battle.damage.calcutor;
 
+import java.util.List;
+
+import com.mm.common.battle.damage.Damage;
 import com.mm.common.battle.damage.IDamageCalculator;
+import com.mm.common.battle.template.EffectParam;
 import com.mm.common.battle.unit.Unit;
 
 public class MagicDamage implements IDamageCalculator {
 
-	public double calcDamage(Unit source, Unit target) {
-		// TODO Auto-generated method stub
-		return 0;
+	public Damage calcDamage(EffectParam param, Unit source, Unit target) {
+		return null;
 	}
 
+	
 }
