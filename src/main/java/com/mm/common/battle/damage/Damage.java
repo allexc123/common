@@ -1,10 +1,11 @@
 package com.mm.common.battle.damage;
 
+import com.mm.common.battle.template.EffectType;
 import com.mm.common.battle.unit.Unit;
 
 public class Damage {
 	private Unit target;
-	private DamageType type;
+	private EffectType type;
 	private long damageValue; //伤害值
 	private int order; //第几次伤害
 	
@@ -16,10 +17,10 @@ public class Damage {
 		this.target = target;
 	}
 	
-	public DamageType getType() {
+	public EffectType getType() {
 		return type;
 	}
-	public void setTypel(DamageType type) {
+	public void setTypel(EffectType type) {
 		this.type = type;
 	}
 	public long getDamageValue() {

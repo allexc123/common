@@ -12,4 +12,8 @@ public enum DamageType {
 	private DamageType(Class<?> clazz) {
 		this.clazz = clazz;
 	}
+	
+	public static DamageType valueOf(int code) {
+		return PHYSICAL;
+	}
 }

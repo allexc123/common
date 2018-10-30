@@ -6,10 +6,14 @@ import java.util.List;
 
 import com.mm.common.battle.damage.Damage;
 import com.mm.common.battle.damage.DamageFactory;
+import com.mm.common.battle.damage.DamageType;
+import com.mm.common.battle.damage.ValueType;
 import com.mm.common.battle.selector.SelectSide;
 import com.mm.common.battle.selector.SelectType;
 import com.mm.common.battle.selector.Selector;
+import com.mm.common.battle.skill.DamageParam;
 import com.mm.common.battle.template.EffectParam;
+import com.mm.common.battle.template.EffectType;
 import com.mm.common.battle.template.SkillTemplate;
 import com.mm.common.battle.unit.Unit;
 import com.mm.modular.Inject;
@@ -136,12 +140,38 @@ public class AttackOrder {
 	
 		List<EffectParam> effectParams = skillTemplate.getEffectParams();
 		for(EffectParam param : effectParams) {
+			disposeEffect(param);
+		}
+	}
+	/**
+	 * 处理各种效果
+	 * @param param
+	 */
+	private void disposeEffect(EffectParam param) {
+		EffectType type = param.getEffectType();
+		switch (type) {
+		case DAMAGE:
+			DamageParam damageParam = new DamageParam();
+			String paramStr = param.getParam();
+			String[] s = paramStr.split("\\|");
+			//第一位伤害类型
+			DamageType damageType = DamageType.valueOf(Integer.parseInt(s[0]));
+			//第二位 数字类型
+			damageParam.setValueType(ValueType.VALUE);
+			//第三位 值
+			damageParam.setValue(Float.parseFloat(s[2]));
 			for(Unit target : targets) {
-				Damage damage = DamageFactory.calc(param, source, target);
+				Damage damage = DamageFactory.calc(damageType, source, target, damageParam);
 				this.damages.add(damage);
 				target.takeDamage(damage, battle.unitCollection());
 				
 			}
+			break;
+			case GENERATEORDER:
+				
+				break;
+		default:
+			break;
 		}
 	}
 	private boolean checkTargesState() {
