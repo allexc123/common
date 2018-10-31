@@ -20,6 +20,8 @@ public class SkillTemplate extends AbstractTempate {
 	//技能产生的bufferId
 	private int bufferId;
 	
+	//执行的帧数
+	private int execFrameNum;
 	//技能效果 （顺序执行）
 	private List<EffectParam> effectParams;
 
@@ -72,4 +74,12 @@ public class SkillTemplate extends AbstractTempate {
 		this.effectParams = effectParams;
 	}
 
+	public int getExecFrameNum() {
+		return execFrameNum;
+	}
+
+	public void setExecFrameNum(int execFrameNum) {
+		this.execFrameNum = execFrameNum;
+	}
+	
 }

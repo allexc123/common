@@ -12,6 +12,7 @@ import com.mm.common.battle.selector.SelectSide;
 import com.mm.common.battle.selector.SelectType;
 import com.mm.common.battle.selector.Selector;
 import com.mm.common.battle.skill.DamageParam;
+import com.mm.common.battle.skill.Skill;
 import com.mm.common.battle.template.EffectParam;
 import com.mm.common.battle.template.EffectType;
 import com.mm.common.battle.template.SkillTemplate;
@@ -24,7 +25,9 @@ import com.mm.template.Templates;
 public class AttackOrder {
 	
 	@Inject
-	private Templates temolates;
+	private Templates templates;
+	@Inject
+	private OrderFactory orderFactory;
 
 	private Battle battle;
 	private Unit source;
@@ -97,8 +100,7 @@ public class AttackOrder {
 	
 	public void exec(int curFrame) {
 		
-		this.setExecFrame(curFrame);
-		boolean result = exec();
+		boolean result = action(curFrame);
 		
 		
 	
@@ -113,12 +115,12 @@ public class AttackOrder {
 
 	}
 	
-	private boolean exec() {
+	private boolean action(int curFrame) {
 		calcFrameNum();
 		//行动前buff
 		
 		if(checkTargesState()) {
-			SkillTemplate skillTemplate = temolates.getTemplates(skillId, SkillTemplate.class);
+			SkillTemplate skillTemplate = templates.getTemplates(skillId, SkillTemplate.class);
 			if(skillTemplate == null) {
 				System.out.println("技能不存在" + skillId);
 			}
@@ -129,25 +131,25 @@ public class AttackOrder {
 		}
 		
 		//使用技能
-		execSkill();
+		execSkill(curFrame);
 		//行动后buff
 		
 		return true;
 	}
-	private void execSkill() {
+	private void execSkill(int curFrame) {
 		//获取技能模板
-		SkillTemplate skillTemplate = temolates.getTemplates(this.skillId, SkillTemplate.class);
+		SkillTemplate skillTemplate = templates.getTemplates(this.skillId, SkillTemplate.class);
 	
 		List<EffectParam> effectParams = skillTemplate.getEffectParams();
 		for(EffectParam param : effectParams) {
-			disposeEffect(param);
+			disposeEffect(param, curFrame);
 		}
 	}
 	/**
 	 * 处理各种效果
 	 * @param param
 	 */
-	private void disposeEffect(EffectParam param) {
+	private void disposeEffect(EffectParam param, int curFrame) {
 		EffectType type = param.getEffectType();
 		switch (type) {
 		case DAMAGE:
@@ -168,7 +170,22 @@ public class AttackOrder {
 			}
 			break;
 			case GENERATEORDER:
+				int skillId = Integer.parseInt(param.getParam());
 				
+				AttackOrder order = orderFactory.createOrder(skillId, source, battle.uc);
+				Skill skill = source.getSkill(skillId);
+				int execFrame = curFrame;
+				if(skill != null) {
+					SkillTemplate skillTemplate = templates.getTemplates(skillId, SkillTemplate.class);
+					if(skillTemplate != null) {
+						if(skill.getLastUse() + skillTemplate.getExecFrameNum() < execFrame) {
+							execFrame += skillTemplate.getExecFrameNum();
+						}
+					}
+					
+				}
+				order.setExecFrame(execFrame);
+				battle.addWaitExecOrder(order);
 				break;
 		default:
 			break;

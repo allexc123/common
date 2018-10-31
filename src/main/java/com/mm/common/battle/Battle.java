@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import com.mm.action.ActionQueue;
 import com.mm.common.battle.action.CheckBattleAction;
@@ -26,7 +27,8 @@ public class Battle {
 	protected int curFrame; //战斗当前帧数
 	
 	protected AttackOrder lastAttackOrder; //上一个攻击的指令
-	protected List<AttackOrder> orderQueue;	//当前使用的指令集
+	protected List<AttackOrder> waitExecOrders;	//等待执行指令集
+	protected PriorityQueue<AttackOrder> orderQueue;	//当前使用的指令集
 	protected List<AttackOrder> attackOrders; //待发送的指令集
 	
 	protected List<AttackOrder> historyAttackOrder;//历史指令集
@@ -40,8 +42,9 @@ public class Battle {
 	public Battle() {
 		this.battleId = BattleContext.idGenerator();
 		this.actionQueue = new ActionQueue(BattleContext.executor());
-
-		this.orderQueue = new ArrayList<AttackOrder>();	
+		
+		this.waitExecOrders = new ArrayList<>();
+		this.orderQueue = new PriorityQueue<AttackOrder>((o1, o2)-> o1.getExecFrame() - o2.getExecFrame());
 		this.attackOrders = new ArrayList<AttackOrder>();
 		this.historyAttackOrder = new ArrayList<AttackOrder>();
 		
@@ -98,6 +101,13 @@ public class Battle {
 	public void execOrders() {
 		if(this.state == BattleState.FIGHTING) {
 			
+			//把等待执行的指令放到执行指令集中
+			for(Iterator<AttackOrder> it = waitExecOrders.iterator(); it.hasNext();) {
+				AttackOrder order = it.next();
+				this.addOrder(order);
+				it.remove();
+			}
+			
 			uc.releaseOrders(curFrame);
 			
 			//清理上一回合数据
@@ -147,14 +157,15 @@ public class Battle {
 	}
 	
 	public void addOrder(AttackOrder order) {
-		int index = 0;
-		for(AttackOrder temp : orderQueue) {
-			if(temp.getExecFrame() > order.getExecFrame()) {
-				break;
-			}
-			index++;
-		}
-		orderQueue.add(index, order);
+//		int index = 0;
+//		for(AttackOrder temp : orderQueue) {
+//			if(temp.getExecFrame() > order.getExecFrame()) {
+//				break;
+//			}
+//			index++;
+//		}
+//		orderQueue.add(index, order);
+		orderQueue.add(order);
 	}
 	
 	public AttackOrder getLastAttackOrder() {
@@ -165,6 +176,9 @@ public class Battle {
 	}
 	public void addAttackOrder(AttackOrder order) {
 		this.attackOrders.add(order);
+	}
+	public void addWaitExecOrder(AttackOrder order) {
+		this.waitExecOrders.add(order);
 	}
 	public void addFrame(int frame) {
 		this.curFrame += frame;

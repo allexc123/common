@@ -9,6 +9,7 @@ import java.util.Map;
 import com.mm.common.battle.AttackOrder;
 import com.mm.common.battle.Battle;
 import com.mm.common.battle.BattleSide;
+import com.mm.common.battle.OrderFactory;
 import com.mm.common.battle.selector.SelectSide;
 import com.mm.common.battle.selector.SelectType;
 import com.mm.common.battle.selector.Selector;
@@ -22,8 +23,8 @@ import com.mm.template.Templates;
 public class UnitCollection {
 	
 	@Inject
-	private Templates templates;
-	
+	private OrderFactory orderFactory;
+
 	private Battle battle;
 	
 	private List<Unit> allUnits; // 所有的战斗单位
@@ -77,8 +78,9 @@ public class UnitCollection {
 			if(skill == null) {
 				return;
 			}
-			AttackOrder order = createOrder(skill.getSkillId(), unit);
 			skill.setLastUse(curFrame);
+			AttackOrder order = orderFactory.createOrder(skill.getSkillId(), unit, this);
+			order.setExecFrame(curFrame);
 			if(order != null) {
 //				
 //				for(Unit u : select) {
@@ -89,19 +91,7 @@ public class UnitCollection {
 			}
 		}
 	}
-	public AttackOrder createOrder(int skillId, Unit source) {
-		
-		SkillTemplate skillTemplate = templates.getTemplates(skillId, SkillTemplate.class);
-		if(skillTemplate == null) {
-			System.out.println("技能不存在" + skillId);
-		}
-		SelectType selectType = skillTemplate.getSelectType();
-		SelectSide selectSide = skillTemplate.getSelectSide();
-		//根据技能配置获取目标
-		List<Unit> targets = Selector.select(selectType, source, this, selectSide, "");
-		AttackOrder order = new AttackOrder(source, targets, skillId);
-		return order;
-	}
+	
 	/**
 	 * 从死亡列表移到存活列表中
 	 * @param unit

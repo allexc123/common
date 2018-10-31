@@ -26,12 +26,10 @@ public class Unit {
 	/**战斗的回合数*/
 	private int curTurn;
 	
-	/**普通攻击技能*/
-	private Skill defaultSkill;
+
 	/**主动技能*/
-	private List<Skill> selects;
-	/**主动技能*/
-	private List<Skill> passives;
+	private List<Skill> skills;
+
 	
 	private List<Buffer> buffers;
 	
@@ -43,8 +41,7 @@ public class Unit {
 		this.side = side;
 		this.battle = battle;
 		
-		this.selects = new ArrayList<Skill>();
-		this.passives = new ArrayList<Skill>();
+		this.skills = new ArrayList<Skill>();
 	}
 	
 	public Battle getBattle() {
@@ -69,25 +66,12 @@ public class Unit {
 		this.curTurn++;
 	}
 	
-
-	public Skill getDefaultSkill() {
-		return defaultSkill;
+	public List<Skill> getSkills() {
+		return skills;
 	}
 
-	public void setDefaultSkill(Skill defaultSkill) {
-		this.defaultSkill = defaultSkill;
-	}
-	public List<Skill> getSelects() {
-		return selects;
-	}
-	public void addSelect(Skill skill) {
-		this.selects.add(skill);
-	}
-	public List<Skill> getPassives() {
-		return passives;
-	}
-	public void addPassive(Skill skill) {
-		this.passives.add(skill);
+	public void addSkill(Skill skill) {
+		this.skills.add(skill);
 	}
 
 	public void setReadyTime(int readyTime) {
@@ -124,13 +108,21 @@ public class Unit {
 		if(!canAction(curFrame)) {
 			return null;
 		}
-		Skill skill = this.getDefaultSkill();
-		if((skill.getLastUse() + skill.getLastCommonCD()) >= curFrame) {
-			return null;
+		for(Skill skill : skills) {
+			if((skill.getLastUse() + skill.getLastCommonCD()) <= curFrame) {
+				return skill;
+			}
 		}
-		return skill;
+		return null;
 	}
-	
+	public Skill getSkill(int skillId) {
+		for(Skill skill : skills) {
+			if(skill.getSkillId() == skillId) {
+				return skill;
+			}
+		}
+		return null;
+	}
 	public void takeDamage(Damage damage, UnitCollection uc) {
 		if(this.isDead()) {
 			return;
