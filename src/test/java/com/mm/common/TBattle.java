@@ -3,6 +3,7 @@ package com.mm.common;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.maoyb.core.ApplicationContext;
 import com.mm.common.battle.Battle;
 import com.mm.common.battle.BattleSide;
 import com.mm.common.battle.damage.DamageType;
@@ -14,7 +15,6 @@ import com.mm.common.battle.template.EffectParam;
 import com.mm.common.battle.template.EffectType;
 import com.mm.common.battle.template.SkillTemplate;
 import com.mm.common.battle.unit.Unit;
-import com.mm.core.ApplicationContext;
 
 public class TBattle {
 

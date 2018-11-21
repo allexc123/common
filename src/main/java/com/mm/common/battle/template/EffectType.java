@@ -1,7 +1,7 @@
 package com.mm.common.battle.template;
 
-import com.mm.tools.Codec;
-import com.mm.tools.EnumCodec;
+import com.maoyb.tools.Codec;
+import com.maoyb.tools.EnumCodec;
 
 public enum EffectType {
 	//伤害

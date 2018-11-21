@@ -1,9 +1,9 @@
 package com.mm.common.battle.damage;
 
+import com.maoyb.tools.Codec;
+import com.maoyb.tools.EnumCodec;
 import com.mm.common.battle.damage.calcutor.MagicDamage;
 import com.mm.common.battle.damage.calcutor.PhysicalDamage;
-import com.mm.tools.Codec;
-import com.mm.tools.EnumCodec;
 
 public enum DamageType {
 	@Codec(1) PHYSICAL(PhysicalDamage.class),

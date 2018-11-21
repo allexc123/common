@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.maoyb.modular.Inject;
+import com.maoyb.modular.Prototype;
+import com.maoyb.template.Templates;
 import com.mm.common.battle.AttackOrder;
 import com.mm.common.battle.Battle;
 import com.mm.common.battle.BattleSide;
@@ -15,9 +18,6 @@ import com.mm.common.battle.selector.SelectType;
 import com.mm.common.battle.selector.Selector;
 import com.mm.common.battle.skill.Skill;
 import com.mm.common.battle.template.SkillTemplate;
-import com.mm.modular.Inject;
-import com.mm.modular.Prototype;
-import com.mm.template.Templates;
 
 @Prototype
 public class UnitCollection {

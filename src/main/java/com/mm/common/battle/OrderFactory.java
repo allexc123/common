@@ -2,15 +2,15 @@ package com.mm.common.battle;
 
 import java.util.List;
 
+import com.maoyb.modular.Bean;
+import com.maoyb.modular.Inject;
+import com.maoyb.template.Templates;
 import com.mm.common.battle.selector.SelectSide;
 import com.mm.common.battle.selector.SelectType;
 import com.mm.common.battle.selector.Selector;
 import com.mm.common.battle.template.SkillTemplate;
 import com.mm.common.battle.unit.Unit;
 import com.mm.common.battle.unit.UnitCollection;
-import com.mm.modular.Inject;
-import com.mm.modular.Bean;
-import com.mm.template.Templates;
 
 
 @Bean

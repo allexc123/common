@@ -2,10 +2,10 @@ package com.mm.common.battle.template;
 
 import java.util.List;
 
+import com.maoyb.template.AbstractTempate;
 import com.mm.common.battle.damage.DamageType;
 import com.mm.common.battle.selector.SelectSide;
 import com.mm.common.battle.selector.SelectType;
-import com.mm.template.AbstractTempate;
 
 public class SkillTemplate extends AbstractTempate {
 	private String name;
