@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.maoyb.modular.Inject;
-import com.maoyb.modular.Prototype;
 import com.maoyb.template.Templates;
 import com.mm.common.battle.damage.Damage;
 import com.mm.common.battle.damage.DamageFactory;
@@ -21,7 +20,7 @@ import com.mm.common.battle.template.EffectType;
 import com.mm.common.battle.template.SkillTemplate;
 import com.mm.common.battle.unit.Unit;
 
-@Prototype
+
 public class AttackOrder {
 	
 	@Inject
